@@ -15,11 +15,7 @@ public class Main
         String preferenceMatrixPath = args[1];
         PreferenceMatrix preferenceMatrix = ReadPreferenceList(preferenceMatrixPath);
 
-        // Generate the voting vector
-        int[] votingVector = scheme.GetVotingVector(preferenceMatrix.GetCandidateCount());
-
-        // Get the integer preference matrix
-        int[][] intPreferenceMatrix = preferenceMatrix.GetIntPreferenceMatrix();
+        Integer[] votingResult = preferenceMatrix.CalculateOutcome(scheme);
 
         //Todo Evaluate scheme
 
