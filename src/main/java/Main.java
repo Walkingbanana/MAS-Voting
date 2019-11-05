@@ -1,22 +1,49 @@
-public class Main {
+import java.io.*;
 
+public class Main
+{
+    public static void main(String[] args)
+            throws IOException // Todo I hate java's forced exception handling
+    {
+        // Todo Remove this line once I figure out how to pass arguments in IntelliJ
+        args = new String[] {"BordaVoting", "./PreferenceFiles/Test.txt"};
 
-    public static void main(String[] args) {
+        // Parse the voting scheme
+        VotingScheme scheme = VotingScheme.valueOf(args[0]);
 
+        // Read the file containing the preference matrix
+        String preferenceMatrixPath = args[1];
+        PreferenceMatrix preferenceMatrix = ReadPreferenceList(preferenceMatrixPath);
 
-        //Todo read csv
-        int[][] preferenceLists = new int[0][0];
+        // Generate the voting vector
+        int[] votingVector = scheme.GetVotingVector(preferenceMatrix.GetCandidateCount());
 
-        //Todo calculate voting vectors
-        for(int i = 0; i < preferenceLists.length; i++){
-
-        }
-
+        // Get the integer preference matrix
+        int[][] intPreferenceMatrix = preferenceMatrix.GetIntPreferenceMatrix();
 
         //Todo Evaluate scheme
 
         //Todo return output
+    }
 
+    public static PreferenceMatrix ReadPreferenceList(String filePath)
+            throws IOException // Todo I hate java's forced exception handling
+    {
+        try(BufferedReader reader = new BufferedReader(new FileReader(filePath)))
+        {
+            String line = reader.readLine();
 
+            // The length of the first line tells us how many candidates we have
+            char[][] preferenceList = new char[line.length()][];
+            preferenceList[0] = line.toCharArray();
+
+            // Read the remaining lines
+            for(int i = 1; i < preferenceList.length; i++)
+            {
+                preferenceList[i] = reader.readLine().toCharArray();
+            }
+
+            return new PreferenceMatrix(preferenceList);
+        }
     }
 }
