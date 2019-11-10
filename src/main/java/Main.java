@@ -15,7 +15,12 @@ public class Main
         String preferenceMatrixPath = args[1];
         PreferenceMatrix preferenceMatrix = ReadPreferenceList(preferenceMatrixPath);
 
-        Integer[] votingResult = preferenceMatrix.CalculateOutcome(scheme);
+        int[] outcome = preferenceMatrix.CalculateOutcome(scheme);
+
+        // Example from the slides, result should be 0.5
+        System.out.println((new MASHappinessMetric().CalculateHappiness(new int[] {0, 1, 2, 3}, new int[] {1, 0, 2, 3})));
+        // Example from the assignment.pdf, result should be 0.25
+        System.out.println((new MASHappinessMetric().CalculateHappiness(new int[] {0, 1, 2, 3}, new int[] {2, 0, 1, 3})));
 
         //Todo Evaluate scheme
 

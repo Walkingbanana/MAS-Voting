@@ -37,9 +37,8 @@ public class PreferenceMatrix
         }
     }
 
-    // ToDo Get rid of Integer[] because Java handles primitives fucking stupid
     // ToDo Handle lexicographic order for candidates with the same score
-    public Integer[] CalculateOutcome(VotingScheme scheme)
+    public int[] CalculateOutcome(VotingScheme scheme)
     {
         int[] scores = CalculateCandidateScores(scheme);
 
@@ -53,7 +52,8 @@ public class PreferenceMatrix
 
         // Sort our indices based on the scores
         Arrays.sort(candidateIndices, Comparator.comparingInt(x -> -scores[x]));
-        return candidateIndices;
+        // Get rid of Integer[] because Java handles primitives fucking stupid
+        return Arrays.stream(candidateIndices).mapToInt(Integer::intValue).toArray();
     }
 
     public int[] CalculateCandidateScores(VotingScheme scheme)
