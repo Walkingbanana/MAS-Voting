@@ -1,9 +1,6 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class MASHappinessMetric
 {
-    public double CalculateHappiness(int[] preferences, int[] outcome)
+    public static double calculateHappiness(int[] preferences, int[] outcome)
     {
         int distanceSum = 0;
         for(int row = 0; row < preferences.length; row++)
@@ -26,15 +23,25 @@ public class MASHappinessMetric
         return 1. / (1. + Math.abs(distanceSum));
     }
 
-    public double[] CalculateHappiness(PreferenceMatrix matrix, int[] outcome)
+    public static double[] calculateHappinessList(PreferenceMatrix matrix, int[] outcome)
     {
-        int[][] intMatrix = matrix.GetIntPreferenceMatrix();
-        double[] happinessVector = new double[matrix.GetCandidateCount()];
-        for(int column = 0; column < matrix.GetCandidateCount(); column++)
+        int[][] intMatrix = matrix.getIntPreferenceMatrix();
+        double[] happinessVector = new double[matrix.getCandidateCount()];
+        for(int column = 0; column < matrix.getCandidateCount(); column++)
         {
-            happinessVector[column] = CalculateHappiness(intMatrix[column], outcome);
+            happinessVector[column] = calculateHappiness(intMatrix[column], outcome);
         }
 
         return happinessVector;
+    }
+
+    public static double calculateHappiness(PreferenceMatrix matrix, int[] outcome)
+    {
+        double[] happinessList = calculateHappinessList(matrix, outcome);
+        double happinessLevel = 0d;
+        for(int i = 0; i< happinessList.length; i++){
+            happinessLevel += happinessList[i];
+        }
+        return happinessLevel;
     }
 }

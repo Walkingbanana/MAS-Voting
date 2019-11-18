@@ -1,10 +1,10 @@
-import java.util.ArrayList;
+import com.sun.scenario.effect.impl.state.AccessHelper;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 
-public class PreferenceMatrix
-{
+public class PreferenceMatrix {
     private char[][] charPreferenceMatrix;
     private int[][] intPreferenceMatrix;
 
@@ -12,25 +12,21 @@ public class PreferenceMatrix
 
     private int candidateCount;
 
-    public PreferenceMatrix(char[][] preferenceList)
-    {
+    public PreferenceMatrix(char[][] preferenceList) {
         charPreferenceMatrix = preferenceList;
         candidateCount = charPreferenceMatrix.length;
 
         // We want to map all characters to a unique index
         // This makes it much easier to work with the matrix
         charIndexLookup = new HashMap<>();
-        for(int i = 0; i < charPreferenceMatrix.length; i++)
-        {
+        for (int i = 0; i < charPreferenceMatrix.length; i++) {
             charIndexLookup.put(charPreferenceMatrix[i][0], i);
         }
 
         // Convert the char-preference-matrix into an index-preference-matrix
         intPreferenceMatrix = new int[charPreferenceMatrix.length][charPreferenceMatrix.length];
-        for(int row = 0; row < intPreferenceMatrix.length; row++)
-        {
-            for(int col = 0; col < intPreferenceMatrix.length; col++)
-            {
+        for (int row = 0; row < intPreferenceMatrix.length; row++) {
+            for (int col = 0; col < intPreferenceMatrix.length; col++) {
                 char currentChar = charPreferenceMatrix[row][col];
                 intPreferenceMatrix[row][col] = charIndexLookup.get(currentChar);
             }
@@ -38,15 +34,13 @@ public class PreferenceMatrix
     }
 
     // ToDo Handle lexicographic order for candidates with the same score
-    public int[] CalculateOutcome(VotingScheme scheme)
-    {
-        int[] scores = CalculateCandidateScores(scheme);
+    public int[] calculateOutcome(VotingScheme scheme) {
+        int[] scores = calculateCandidateScores(scheme);
 
         // We now have the scores array in which an entry at index i specifies the score of candidate i
         // We want to return an array which contains the candidate number ordered by the score
         Integer[] candidateIndices = new Integer[candidateCount];
-        for(int i = 0; i < candidateCount; i++)
-        {
+        for (int i = 0; i < candidateCount; i++) {
             candidateIndices[i] = i;
         }
 
@@ -56,14 +50,11 @@ public class PreferenceMatrix
         return Arrays.stream(candidateIndices).mapToInt(Integer::intValue).toArray();
     }
 
-    public int[] CalculateCandidateScores(VotingScheme scheme)
-    {
+    public int[] calculateCandidateScores(VotingScheme scheme) {
         int[] votingVector = scheme.GetVotingVector(candidateCount);
         int[] scores = new int[candidateCount];
-        for(int col = 0; col < candidateCount; col++)
-        {
-            for(int row = 0; row < candidateCount; row++)
-            {
+        for (int col = 0; col < candidateCount; col++) {
+            for (int row = 0; row < candidateCount; row++) {
                 // Each column specifies the preferences of one voter from highest to lowest preference
                 // Each row in the voting vector specifies the score that the candidate gets
                 // based on his position in the preference list of the voter
@@ -74,14 +65,31 @@ public class PreferenceMatrix
         return scores;
     }
 
-    public int[][] GetIntPreferenceMatrix()
-    {
+    public int[][] getIntPreferenceMatrix() {
         // Make sure that nobody alters our private array
         return intPreferenceMatrix.clone();
     }
 
-    public int GetCandidateCount()
-    {
+    public int getCandidateCount() {
         return candidateCount;
     }
+
+
+    public char[] getPreferenceListOfVoter(int voterIndex) {
+        //Todo hit Dominik because he is using the array in this weird shape
+        char[] prefList = new char[charPreferenceMatrix[0].length];
+        for(int i = 0; i < charPreferenceMatrix[0].length; i++){
+            prefList[i] = charPreferenceMatrix [i][voterIndex];
+        }
+        return prefList;
+    }
+
+    public void setCharPreferenceListOfVoter(int voterIndex, char[] preferenceList) {
+        for (int col = 0; col < intPreferenceMatrix.length; col++) {
+            char currentChar = preferenceList[col];
+            intPreferenceMatrix[col][voterIndex] = charIndexLookup.get(currentChar);
+            charPreferenceMatrix[col][voterIndex] = currentChar;
+        }
+    }
+
 }
