@@ -1,11 +1,11 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        //args = new String[] {"BordaVoting", "./PreferenceFiles/Test.txt"};
-
+        args = new String[] {"BordaVoting", "./PreferenceFiles/Test.txt", "1"};
 
         //Todo check input to make it robust
         // Parse the voting scheme
@@ -28,12 +28,8 @@ public class Main {
             System.out.println("Voter " + i + ": " + happiness[i]);
         }
 
-//        System.out.println((new MASHappinessMetric().calculateHappiness(new int[]{0, 1, 2, 3}, new int[]{1, 0, 2, 3})));
-        // Example from the assignment.pdf, result should be 0.25
-//        System.out.println((new MASHappinessMetric().calculateHappiness(new int[]{0, 1, 2, 3}, new int[]{2, 0, 1, 3})));
-
-        Set<VotingOption> votingOptions = Permutator.permutate(preferenceMatrix.getPreferenceListOfVoter(voterIndex).length, voterIndex, preferenceMatrix, scheme);
-
+        VotingSituationAnalyzer analyzer = new VotingSituationAnalyzer(preferenceMatrix, scheme);
+        Set<VotingOption> votingOptions = analyzer.analyzeVoter(voterIndex);
 
         //not sure what to do with the list so just log it
         Iterator<VotingOption> it = votingOptions.iterator();
@@ -47,19 +43,19 @@ public class Main {
     public static PreferenceMatrix readPreferenceList(String filePath)
             throws IOException // Todo I hate java's forced exception handling
     {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath)))
+        {
+            ArrayList<char[]> preferences = new ArrayList<>();
+
+            // Read all lines
             String line = reader.readLine();
-
-            // The length of the first line tells us how many candidates we have
-            char[][] preferenceList = new char[line.length()][];
-            preferenceList[0] = line.toCharArray();
-
-            // Read the remaining lines
-            for (int i = 1; i < preferenceList.length; i++) {
-                preferenceList[i] = reader.readLine().toCharArray();
+            while(line != null)
+            {
+                preferences.add(line.toCharArray());
+                line = reader.readLine();
             }
 
-            return new PreferenceMatrix(preferenceList);
+            return new PreferenceMatrix(preferences.toArray(new char[preferences.size()][]));
         }
     }
 }

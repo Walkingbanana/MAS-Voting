@@ -25,11 +25,10 @@ public class MASHappinessMetric
 
     public static double[] calculateHappinessList(PreferenceMatrix matrix, int[] outcome)
     {
-        int[][] intMatrix = matrix.getIntPreferenceMatrix();
-        double[] happinessVector = new double[matrix.getCandidateCount()];
-        for(int column = 0; column < matrix.getCandidateCount(); column++)
+        double[] happinessVector = new double[matrix.getVoterCount()];
+        for(int i = 0; i < matrix.getVoterCount(); i++)
         {
-            happinessVector[column] = calculateHappiness(intMatrix[column], outcome);
+            happinessVector[i] = calculateHappiness(matrix.getVoterPreferences(i), outcome);
         }
 
         return happinessVector;

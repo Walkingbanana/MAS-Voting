@@ -1,42 +1,49 @@
-import com.sun.scenario.effect.impl.state.AccessHelper;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 
-public class PreferenceMatrix {
+public class PreferenceMatrix
+{
     private char[][] charPreferenceMatrix;
-    private int[][] intPreferenceMatrix;
+    private int[][] preferenceMatrix;
+    private int[][] transposedPreferenceMatrix;
 
     private HashMap<Character, Integer> charIndexLookup;
+    private HashMap<Integer, Character> indexCharLookup;
 
     private int candidateCount;
+    private int voterCount;
 
-    public PreferenceMatrix(char[][] preferenceList) {
+    public PreferenceMatrix(char[][] preferenceList)
+    {
         charPreferenceMatrix = preferenceList;
         candidateCount = charPreferenceMatrix.length;
+        voterCount = charPreferenceMatrix[0].length;
 
         // We want to map all characters to a unique index
-        // This makes it much easier to work with the matrix
+        // This makes it much easier to work with the matrix, so we assign a index to each char
         charIndexLookup = new HashMap<>();
+        indexCharLookup = new HashMap<>();
         for (int i = 0; i < charPreferenceMatrix.length; i++) {
             charIndexLookup.put(charPreferenceMatrix[i][0], i);
+            indexCharLookup.put(i, charPreferenceMatrix[i][0]);
         }
 
         // Convert the char-preference-matrix into an index-preference-matrix
-        intPreferenceMatrix = new int[charPreferenceMatrix.length][charPreferenceMatrix.length];
-        for (int row = 0; row < intPreferenceMatrix.length; row++) {
-            for (int col = 0; col < intPreferenceMatrix.length; col++) {
+        preferenceMatrix = new int[candidateCount][voterCount];
+        transposedPreferenceMatrix = new int[voterCount][candidateCount];
+        for (int row = 0; row < candidateCount; row++) {
+            for (int col = 0; col < voterCount; col++) {
                 char currentChar = charPreferenceMatrix[row][col];
-                intPreferenceMatrix[row][col] = charIndexLookup.get(currentChar);
+                int index = charIndexLookup.get(currentChar);
+                preferenceMatrix[row][col] = index;
+                transposedPreferenceMatrix[col][row] = index;
             }
         }
     }
 
-    // ToDo Handle lexicographic order for candidates with the same score
-    public int[] calculateOutcome(VotingScheme scheme) {
-        int[] scores = calculateCandidateScores(scheme);
-
+    public int[] calculateOutcome(int[] candidateScores)
+    {
         // We now have the scores array in which an entry at index i specifies the score of candidate i
         // We want to return an array which contains the candidate number ordered by the score
         Integer[] candidateIndices = new Integer[candidateCount];
@@ -44,52 +51,83 @@ public class PreferenceMatrix {
             candidateIndices[i] = i;
         }
 
-        // Sort our indices based on the scores
-        Arrays.sort(candidateIndices, Comparator.comparingInt(x -> -scores[x]));
+        // Sort our indices
+        CandidateComparator comparator = new CandidateComparator(candidateScores);
+        Arrays.sort(candidateIndices, comparator);
+
         // Get rid of Integer[] because Java handles primitives fucking stupid
         return Arrays.stream(candidateIndices).mapToInt(Integer::intValue).toArray();
+    }
+
+    public int[] calculateOutcome(VotingScheme scheme) {
+        // Calculate the scores according to the given VotingScheme
+        int[] scores = calculateCandidateScores(scheme);
+        return calculateOutcome(scores);
     }
 
     public int[] calculateCandidateScores(VotingScheme scheme) {
         int[] votingVector = scheme.GetVotingVector(candidateCount);
         int[] scores = new int[candidateCount];
-        for (int col = 0; col < candidateCount; col++) {
+        for (int col = 0; col < voterCount; col++) {
             for (int row = 0; row < candidateCount; row++) {
                 // Each column specifies the preferences of one voter from highest to lowest preference
                 // Each row in the voting vector specifies the score that the candidate gets
                 // based on his position in the preference list of the voter
-                scores[intPreferenceMatrix[row][col]] += votingVector[row];
+                scores[preferenceMatrix[row][col]] += votingVector[row];
             }
         }
 
         return scores;
     }
 
-    public int[][] getIntPreferenceMatrix() {
-        // Make sure that nobody alters our private array
-        return intPreferenceMatrix.clone();
+    public char[] toCharArray(int[] candidates)
+    {
+        char[] transformedCandidates = new char[candidates.length];
+        for(int i = 0; i < candidates.length; i++)
+        {
+            transformedCandidates[i] = indexCharLookup.get(candidates[i]);
+        }
+
+        return transformedCandidates;
+    }
+
+    public int[] getVoterPreferences(int voterIndex)
+    {
+        return transposedPreferenceMatrix[voterIndex];
     }
 
     public int getCandidateCount() {
         return candidateCount;
     }
 
+    public int getVoterCount() { return voterCount; }
 
-    public char[] getPreferenceListOfVoter(int voterIndex) {
-        //Todo hit Dominik because he is using the array in this weird shape
-        char[] prefList = new char[charPreferenceMatrix[0].length];
-        for(int i = 0; i < charPreferenceMatrix[0].length; i++){
-            prefList[i] = charPreferenceMatrix [i][voterIndex];
+    // Sorts a array containing candidate-indices based on their score and lexicographical names
+    private class CandidateComparator implements Comparator<Integer>
+    {
+        private int[] candidateScores;
+
+        public CandidateComparator(int[] candidateScores)
+        {
+            this.candidateScores = candidateScores;
         }
-        return prefList;
-    }
 
-    public void setCharPreferenceListOfVoter(int voterIndex, char[] preferenceList) {
-        for (int col = 0; col < intPreferenceMatrix.length; col++) {
-            char currentChar = preferenceList[col];
-            intPreferenceMatrix[col][voterIndex] = charIndexLookup.get(currentChar);
-            charPreferenceMatrix[col][voterIndex] = currentChar;
+        public int compare(Integer index1, Integer index2)
+        {
+            int candidate1Score = candidateScores[index1];
+            int candidate2Score = candidateScores[index2];
+
+            if(candidate1Score != candidate2Score)
+            {
+                return candidate2Score - candidate1Score;
+            }
+            else
+            {
+                Character candidate1Char = indexCharLookup.get(index1);
+                Character candidate2Char = indexCharLookup.get(index2);
+
+                return candidate1Char.compareTo(candidate2Char);
+            }
         }
     }
-
 }
