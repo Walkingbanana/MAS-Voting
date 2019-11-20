@@ -1,0 +1,4 @@
+AADD
+BBCC
+CCBB
+DDAA

@@ -10,7 +10,7 @@ public class PreferenceMatrixTest {
 
     void setup() throws IOException {
         this.preferenceMatrix = null;
-        String preferenceMatrixPath = "./PreferenceFiles/Test.txt";
+        String preferenceMatrixPath = "./PreferenceFiles/Test_4.txt";
         preferenceMatrix = Main.readPreferenceList(preferenceMatrixPath);
     }
 

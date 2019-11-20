@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        args = new String[] {"BordaVoting", "./PreferenceFiles/Test.txt"};
+        args = new String[] {"BordaVoting", "./PreferenceFiles/Test_4.txt"};
 
         //Todo check input to make it robust
         // Parse the voting scheme
