@@ -11,18 +11,13 @@ public class VotingOption {
     private final char[] preferenceList;
     private final int[] outcome;
     private final double happinessLevel;
+    private final int voterIndex;
 
-    /**
-     * Why just why is it better...
-     * No clue what to put here
-     */
-    private final String reason;
-
-    public VotingOption(char[] preferenceList, int[] outcome, double happinessLevel, String reason) {
+    public VotingOption(char[] preferenceList, int[] outcome, double happinessLevel, int voterIndex) {
         this.preferenceList = preferenceList;
         this.outcome = outcome;
         this.happinessLevel = happinessLevel;
-        this.reason = reason;
+        this.voterIndex = voterIndex;
     }
 
     public char[] getPreferenceList() {
@@ -37,9 +32,7 @@ public class VotingOption {
         return happinessLevel;
     }
 
-    public String getReason() {
-        return reason;
-    }
+    public int getVoterIndex() { return voterIndex; }
 
     @Override
     public String toString() {
@@ -54,9 +47,6 @@ public class VotingOption {
         builder.append(System.lineSeparator());
         builder.append("Happiness: ");
         builder.append(happinessLevel);
-        builder.append(System.lineSeparator());
-        builder.append("Reason: ");
-        builder.append(reason);
         builder.append(System.lineSeparator());
         builder.append("################################");
         return builder.toString();
