@@ -1,21 +1,31 @@
 import pandas as pd
 from matplotlib import pyplot as plt
 
-data = pd.read_csv("results.csv", sep=",")
-
-bordaData = data[data['scheme'] == 'BordaVoting']
-pluralityData = data[data['scheme'] == 'PluralityVoting']
-antiPluralityData = data[data['scheme'] == 'AntiPluralityVoting']
-twoVoting = data[data['scheme'] == 'TwoVoting']
-
-plt.plot(bordaData['nVoters'], bordaData['risk'].astype('float32'), label='Borda Voting')
-plt.plot(pluralityData['nVoters'], pluralityData['risk'].astype('float32'), label='Plurality Voting')
-plt.plot(antiPluralityData['nVoters'], antiPluralityData['risk'].astype('float32'), label='Anti-Plurality Voting')
-plt.plot(twoVoting['nVoters'], twoVoting['risk'].astype('float32'), label='Two Voting')
-plt.xlabel("Number of voters")
-plt.ylabel("Risk of tactical voting")
-plt.legend()
 
 
-plt.show()
-plt.savefig('plot.pdf')
+def plotTestResults(data, testName):
+    testData = data[data['test'] == testName]
+    bordaData = testData[testData['scheme'] == 'BordaVoting']
+    pluralityData = testData[testData['scheme'] == 'PluralityVoting']
+    antiPluralityData = testData[testData['scheme'] == 'AntiPluralityVoting']
+    twoVoting = testData[testData['scheme'] == 'TwoVoting']
+
+    fig1, ax1 = plt.subplots()
+    plt.plot(bordaData['nVoters'], bordaData['risk'], label='Borda Voting')
+    plt.plot(pluralityData['nVoters'], pluralityData['risk'], label='Plurality Voting', color='pink')
+    plt.plot(antiPluralityData['nVoters'], antiPluralityData['risk'], label='Anti-Plurality Voting')
+    plt.plot(twoVoting['nVoters'], twoVoting['risk'], label='Two Voting')
+    ax1.set_yscale('log')
+    plt.xlabel("Number of voters")
+    plt.ylabel("Risk of tactical voting")
+    plt.legend()
+    plt.savefig(testName + '.pdf')
+
+
+data = pd.read_csv("results_all.csv", sep=",")
+plotTestResults(data, 'diff')
+plotTestResults(data, 'odd_4')
+plotTestResults(data, 'half')
+plotTestResults(data, 'Test')
+
+
