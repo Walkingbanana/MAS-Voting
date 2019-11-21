@@ -6,7 +6,11 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        args = new String[] {"BordaVoting", "./PreferenceFiles/Test_4.txt"};
+        executeStuff(args);
+    }
+
+    static double executeStuff(String[] args) {
+//        args = new String[] {"BordaVoting", "./PreferenceFiles/Test_4.txt"};
 
         //Todo check input to make it robust
         // Parse the voting scheme
@@ -25,12 +29,10 @@ public class Main {
         // Analyze what our target voter can do, to manipulate the situation for his own gain
         VotingSituationAnalyzer analyzer = new VotingSituationAnalyzer(preferenceMatrix, scheme);
         ArrayList<VotingOption> options = new ArrayList<>();
-        for(int voterIndex = 0; voterIndex < preferenceMatrix.getVoterCount(); voterIndex++)
-        {
+        for (int voterIndex = 0; voterIndex < preferenceMatrix.getVoterCount(); voterIndex++) {
             ArrayList<VotingOption> votingOptions = analyzer.analyzeVoter(voterIndex);
             options.addAll(votingOptions);
         }
-
 
 
         // Print the true outcome
@@ -43,12 +45,11 @@ public class Main {
             System.out.println("Happiness Voter " + (i + 1) + ": " + happiness[i]);
         }
 
-        System.out.println("Risk of strategic voting: " + options.size() / (double)preferenceMatrix.getVoterCount());
+        System.out.println("Risk of strategic voting: " + options.size() / (double) preferenceMatrix.getVoterCount());
 
         // Print all possible manipulations that our target vote can do
         Iterator<VotingOption> it = options.iterator();
-        while(it.hasNext())
-        {
+        while (it.hasNext()) {
             System.out.println();
 
             VotingOption option = it.next();
@@ -57,20 +58,21 @@ public class Main {
             System.out.println("New Outcome: " + Arrays.toString(preferenceMatrix.toCharArray(option.getOutcome())));
             System.out.println("Summed Happiness: " + option.getHappinessLevel());
         }
+
+
+        return (double) options.size() / preferenceMatrix.getVoterCount();
     }
 
 
     public static PreferenceMatrix readPreferenceList(String filePath)
             throws IOException // Todo I hate java's forced exception handling
     {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath)))
-        {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             ArrayList<char[]> preferences = new ArrayList<>();
 
             // Read all lines
             String line = reader.readLine();
-            while(line != null)
-            {
+            while (line != null) {
                 preferences.add(line.toCharArray());
                 line = reader.readLine();
             }
