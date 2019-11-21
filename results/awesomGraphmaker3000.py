@@ -4,7 +4,6 @@ from matplotlib import pyplot as plt
 
 
 def plotTestResults(data, testName):
-    plt.style.use('ggplot')
     testData = data[data['test'] == testName]
     bordaData = testData[testData['scheme'] == 'BordaVoting']
     pluralityData = testData[testData['scheme'] == 'PluralityVoting']
