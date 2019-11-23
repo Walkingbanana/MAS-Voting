@@ -38,6 +38,11 @@ public class Main {
         // Print the true outcome
         int[] outcome = preferenceMatrix.calculateOutcome(scheme);
         char[] transformedOutcome = preferenceMatrix.toCharArray(outcome);
+
+        if (args.length == 3) {
+            writeLog(args[2], preferenceMatrix, options, transformedOutcome);
+        }
+
 //        System.out.println("--- Initial Outcome: " + Arrays.toString(transformedOutcome) + " ---");
 //
 //        double[] happiness = MASHappinessMetric.calculateHappinessList(preferenceMatrix, outcome);
@@ -61,6 +66,33 @@ public class Main {
 
 
         return (double) options.size() / preferenceMatrix.getVoterCount();
+    }
+
+    private static void writeLog(String outputFile, PreferenceMatrix preferenceMatrix, ArrayList<VotingOption> options, char[] transformedOutcome) {
+        System.out.println("Saving log to " + outputFile);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
+            writer.write("--- Initial Outcome: " + Arrays.toString(transformedOutcome) + " ---");
+            writer.newLine();
+            writer.write("Risk of strategic voting: " + options.size() / (double) preferenceMatrix.getVoterCount());
+            writer.newLine();
+            writer.write("Voting Options:");
+            writer.newLine();
+            for (VotingOption option : options) {
+                writer.newLine();
+                writer.write("--- Possible Manipulation for voter " + (option.getVoterIndex() + 1) + " ---");
+                writer.newLine();
+                writer.write("New Preference List: " + Arrays.toString(option.getPreferenceList()));
+                writer.newLine();
+                writer.write("New Outcome: " + Arrays.toString(preferenceMatrix.toCharArray(option.getOutcome())));
+                writer.newLine();
+                writer.write("Summed Happiness: " + option.getHappinessLevel());
+                writer.newLine();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Successfully wrote logfile");
     }
 
 
