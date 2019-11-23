@@ -4,7 +4,8 @@ from matplotlib import pyplot as plt
 
 
 def plotTestResults(data, testName):
-    testData = data[data['test'] == testName]
+    even = data[data['nVoters'] % 2 == 1]
+    testData = even[even['test'] == testName]
     bordaData = testData[testData['scheme'] == 'BordaVoting']
     pluralityData = testData[testData['scheme'] == 'PluralityVoting']
     antiPluralityData = testData[testData['scheme'] == 'AntiPluralityVoting']
@@ -19,13 +20,13 @@ def plotTestResults(data, testName):
     plt.xlabel("Number of voters")
     plt.ylabel("Risk of tactical voting")
     plt.legend()
-    plt.savefig(testName + '.pdf')
+    plt.savefig(testName + '_odd.pdf')
 
 
 data = pd.read_csv("results_all.csv", sep=",")
-plotTestResults(data, 'diff')
-plotTestResults(data, 'odd_4')
-plotTestResults(data, 'half')
+# plotTestResults(data, 'diff')
+# plotTestResults(data, 'odd_4')
+# plotTestResults(data, 'half')
 plotTestResults(data, 'Test')
 
 
