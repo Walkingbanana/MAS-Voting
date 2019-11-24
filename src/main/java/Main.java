@@ -41,31 +41,36 @@ public class Main {
 
         if (args.length == 3) {
             writeLog(args[2], preferenceMatrix, options, transformedOutcome);
+        }else{
+            logConsole(preferenceMatrix, options, outcome, transformedOutcome);
         }
 
-//        System.out.println("--- Initial Outcome: " + Arrays.toString(transformedOutcome) + " ---");
-//
-//        double[] happiness = MASHappinessMetric.calculateHappinessList(preferenceMatrix, outcome);
-//        for (int i = 0; i < happiness.length; i++) {
-//            System.out.println("Happiness Voter " + (i + 1) + ": " + happiness[i]);
-//        }
-//
-//        System.out.println("Risk of strategic voting: " + options.size() / (double) preferenceMatrix.getVoterCount());
-
-        // Print all possible manipulations that our target vote can do
-//        Iterator<VotingOption> it = options.iterator();
-//        while (it.hasNext()) {
-//            System.out.println();
-//
-//            VotingOption option = it.next();
-//            System.out.println("--- Possible Manipulation for voter " + (option.getVoterIndex() + 1) + " ---");
-//            System.out.println("New Preference List: " + Arrays.toString(option.getPreferenceList()));
-//            System.out.println("New Outcome: " + Arrays.toString(preferenceMatrix.toCharArray(option.getOutcome())));
-//            System.out.println("Summed Happiness: " + option.getHappinessLevel());
-//        }
 
 
         return (double) options.size() / preferenceMatrix.getVoterCount();
+    }
+
+    private static void logConsole(PreferenceMatrix preferenceMatrix, ArrayList<VotingOption> options, int[] outcome, char[] transformedOutcome) {
+        System.out.println("--- Initial Outcome: " + Arrays.toString(transformedOutcome) + " ---");
+
+        double[] happiness = MASHappinessMetric.calculateHappinessList(preferenceMatrix, outcome);
+        for (int i = 0; i < happiness.length; i++) {
+            System.out.println("Happiness Voter " + (i + 1) + ": " + happiness[i]);
+        }
+
+        System.out.println("Risk of strategic voting: " + options.size() / (double) preferenceMatrix.getVoterCount());
+
+        //Print all possible manipulations that our target vote can do
+        Iterator<VotingOption> it = options.iterator();
+        while (it.hasNext()) {
+            System.out.println();
+
+            VotingOption option = it.next();
+            System.out.println("--- Possible Manipulation for voter " + (option.getVoterIndex() + 1) + " ---");
+            System.out.println("New Preference List: " + Arrays.toString(option.getPreferenceList()));
+            System.out.println("New Outcome: " + Arrays.toString(preferenceMatrix.toCharArray(option.getOutcome())));
+            System.out.println("Summed Happiness: " + option.getHappinessLevel());
+        }
     }
 
     private static void writeLog(String outputFile, PreferenceMatrix preferenceMatrix, ArrayList<VotingOption> options, char[] transformedOutcome) {
